@@ -102,8 +102,10 @@
 (function () {
   'use strict';
 
+  var DEFAULT_API = 'https://satwikshreshth1-trustmedx-backend.hf.space';
+
   var apiInput = document.getElementById('api-url');
-  apiInput.value = localStorage.getItem('trustmedx_api') || '';
+  apiInput.value = localStorage.getItem('trustmedx_api') || DEFAULT_API;
   apiInput.addEventListener('change', function () {
     localStorage.setItem('trustmedx_api', apiInput.value.trim());
     init();
