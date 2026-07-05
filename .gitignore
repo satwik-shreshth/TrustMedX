@@ -13,6 +13,11 @@
 Thumbs.db
 .DS_Store
 
+# Python
+__pycache__/
+*.pyc
+server/diabetic_data.csv
+
 # Node (if a JS build is ever added)
 node_modules/
 dist/

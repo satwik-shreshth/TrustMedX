@@ -1,0 +1,282 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>TrustMedX — Interactive Risk Prediction</title>
+<style>
+  :root {
+    --ink: #1a2332; --ink-soft: #4a5568; --accent: #0b4f8a;
+    --accent-soft: #e8f0f8; --warn-bg: #fff8e6; --warn-border: #e6b800;
+    --card-border: #dde3ea; --bg: #fafbfc;
+    --risk-low: #1e7d3c; --risk-mod: #b57e00; --risk-high: #b3261e;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: Georgia, 'Times New Roman', serif; color: var(--ink); background: var(--bg); line-height: 1.6; }
+  header.site { background: var(--accent); color: #fff; padding: 2.2rem 1.5rem; text-align: center; }
+  header.site h1 { font-size: 1.7rem; font-weight: normal; }
+  header.site p { margin-top: 0.4rem; font-size: 0.95rem; opacity: 0.9; }
+  header.site a { color: #cfe3f5; }
+  .disclaimer {
+    background: var(--warn-bg); border: 1px solid var(--warn-border); border-left: 5px solid var(--warn-border);
+    max-width: 72rem; margin: 1.2rem auto; padding: 0.8rem 1.1rem;
+    font-family: 'Segoe UI', Arial, sans-serif; font-size: 0.86rem; color: #5c4a00; border-radius: 4px;
+  }
+  main { max-width: 72rem; margin: 0 auto; padding: 0 1.5rem 4rem; display: grid; grid-template-columns: 7fr 5fr; gap: 1.6rem; }
+  @media (max-width: 900px) { main { grid-template-columns: 1fr; } }
+  .panel { background: #fff; border: 1px solid var(--card-border); border-radius: 6px; padding: 1.4rem 1.6rem; font-family: 'Segoe UI', Arial, sans-serif; }
+  .panel h2 { font-size: 1.15rem; color: var(--accent); font-weight: 600; margin-bottom: 1rem; font-family: Georgia, serif; }
+  fieldset { border: none; margin-bottom: 1.2rem; }
+  legend { font-weight: 600; font-size: 0.92rem; color: var(--accent); padding-bottom: 0.4rem; }
+  .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: 0.7rem 1rem; }
+  label { display: block; font-size: 0.78rem; color: var(--ink-soft); margin-bottom: 0.15rem; }
+  input, select {
+    width: 100%; padding: 0.4rem 0.5rem; font-size: 0.86rem;
+    border: 1px solid var(--card-border); border-radius: 4px; background: #fff; color: var(--ink);
+  }
+  input:focus, select:focus { outline: 2px solid var(--accent-soft); border-color: var(--accent); }
+  button.predict {
+    background: var(--accent); color: #fff; border: none; border-radius: 5px;
+    padding: 0.7rem 2.2rem; font-size: 1rem; cursor: pointer; margin-top: 0.5rem;
+  }
+  button.predict:hover { background: #0a4578; }
+  button.predict:disabled { background: #9db4c8; cursor: wait; }
+  .hint { font-size: 0.78rem; color: var(--ink-soft); margin-top: 0.6rem; }
+  #result .placeholder { color: var(--ink-soft); font-size: 0.9rem; font-style: italic; }
+  .risk-banner {
+    border-radius: 6px; padding: 1rem 1.2rem; margin-bottom: 1rem; color: #fff;
+    font-size: 1.05rem; font-weight: 600;
+  }
+  .risk-LOW { background: var(--risk-low); }
+  .risk-MODERATE { background: var(--risk-mod); }
+  .risk-HIGH { background: var(--risk-high); }
+  .gauge { height: 14px; background: #edf1f5; border-radius: 999px; overflow: hidden; margin: 0.5rem 0 1rem; }
+  .gauge > div { height: 100%; background: var(--accent); border-radius: 999px; transition: width 0.6s ease; }
+  .kv { font-size: 0.88rem; margin-bottom: 0.9rem; }
+  .kv b { color: var(--accent); }
+  table.factors { width: 100%; border-collapse: collapse; font-size: 0.85rem; margin: 0.4rem 0 1rem; }
+  table.factors th { text-align: left; padding: 0.35rem 0.5rem; background: var(--accent-soft); color: var(--accent); }
+  table.factors td { padding: 0.35rem 0.5rem; border-top: 1px solid var(--card-border); }
+  td.up { color: var(--risk-high); } td.down { color: var(--risk-low); }
+  .fine { font-size: 0.78rem; color: var(--ink-soft); }
+  .error { color: var(--risk-high); font-size: 0.88rem; }
+  .apibox { margin-top: 0.8rem; }
+  .apibox summary { cursor: pointer; font-size: 0.8rem; color: var(--ink-soft); }
+</style>
+</head>
+<body>
+
+<header class="site">
+  <h1>TrustMedX — Interactive Risk Prediction</h1>
+  <p>Enter a hypothetical patient encounter and get a calibrated 30-day readmission risk with explanation.
+     &nbsp;·&nbsp; <a href="index.html">← Back to research dashboard</a></p>
+</header>
+
+<div class="disclaimer">
+  <strong>Research prototype only — not for clinical use.</strong> This demo illustrates a research methodology.
+  It is not a medical device and must not inform real clinical decisions. Use only fictitious data.
+</div>
+
+<main>
+  <div class="panel">
+    <h2>Patient Encounter Details</h2>
+    <form id="patient-form"><p class="placeholder">Loading form from API&hellip;</p></form>
+    <details class="apibox">
+      <summary>API settings</summary>
+      <label for="api-url" style="margin-top:0.5rem">Prediction API base URL</label>
+      <input id="api-url" type="text" placeholder="(same origin)">
+      <p class="fine" style="margin-top:0.3rem">Leave blank when the page is served by the TrustMedX server itself.
+      If this page is on GitHub Pages, point this at your deployed API (e.g. a Hugging Face Space or Render URL) and it will be remembered.</p>
+    </details>
+  </div>
+
+  <div class="panel">
+    <h2>Prediction</h2>
+    <div id="result"><p class="placeholder">Fill in the form and press <b>Predict risk</b>.
+      The result shows the calibrated probability, a 90%-coverage conformal prediction set,
+      and the top SHAP factors driving this individual prediction.</p></div>
+  </div>
+</main>
+
+<script>
+(function () {
+  'use strict';
+
+  var apiInput = document.getElementById('api-url');
+  apiInput.value = localStorage.getItem('trustmedx_api') || '';
+  apiInput.addEventListener('change', function () {
+    localStorage.setItem('trustmedx_api', apiInput.value.trim());
+    init();
+  });
+
+  function apiBase() {
+    var v = apiInput.value.trim();
+    return v ? v.replace(/\/+$/, '') : '';
+  }
+
+  // Friendly labels & which fields belong to which group
+  var GROUPS = [
+    ['Demographics', ['race', 'gender', 'age']],
+    ['Encounter', ['admission_type_id', 'discharge_disposition_id', 'admission_source_id',
+                   'time_in_hospital', 'medical_specialty']],
+    ['Utilization history', ['number_outpatient', 'number_emergency', 'number_inpatient']],
+    ['Clinical', ['num_lab_procedures', 'num_procedures', 'num_medications', 'number_diagnoses',
+                  'diag_1', 'diag_2', 'diag_3', 'max_glu_serum', 'A1Cresult']],
+    ['Diabetes management', ['diabetesMed', 'change', 'insulin', 'metformin', 'glipizide', 'glyburide']]
+  ];
+  var LABELS = {
+    race: 'Race', gender: 'Gender', age: 'Age band',
+    admission_type_id: 'Admission type ID (1=emergency, 2=urgent, 3=elective)',
+    discharge_disposition_id: 'Discharge disposition ID (1=home, 3=SNF, 6=home health)',
+    admission_source_id: 'Admission source ID (7=ER, 1=referral)',
+    time_in_hospital: 'Length of stay (days)',
+    medical_specialty: 'Admitting specialty',
+    number_outpatient: 'Outpatient visits (prior year)',
+    number_emergency: 'Emergency visits (prior year)',
+    number_inpatient: 'Inpatient admissions (prior year)',
+    num_lab_procedures: 'Lab procedures this stay',
+    num_procedures: 'Other procedures this stay',
+    num_medications: 'Distinct medications',
+    number_diagnoses: 'Diagnoses on record',
+    diag_1: 'Primary diagnosis (ICD-9 code)',
+    diag_2: 'Secondary diagnosis (ICD-9)',
+    diag_3: 'Additional diagnosis (ICD-9)',
+    max_glu_serum: 'Max glucose serum result',
+    A1Cresult: 'HbA1c result',
+    diabetesMed: 'On any diabetes medication',
+    change: 'Medication changed this stay',
+    insulin: 'Insulin', metformin: 'Metformin', glipizide: 'Glipizide', glyburide: 'Glyburide'
+  };
+
+  var SCHEMA = null;
+
+  function el(tag, attrs, text) {
+    var e = document.createElement(tag);
+    for (var k in (attrs || {})) e.setAttribute(k, attrs[k]);
+    if (text !== undefined) e.textContent = text;
+    return e;
+  }
+
+  function init() {
+    var form = document.getElementById('patient-form');
+    form.innerHTML = '<p class="placeholder">Loading form from API&hellip;</p>';
+    fetch(apiBase() + '/api/schema')
+      .then(function (r) { if (!r.ok) throw new Error('HTTP ' + r.status); return r.json(); })
+      .then(function (schema) { SCHEMA = schema; buildForm(schema); })
+      .catch(function (e) {
+        form.innerHTML = '<p class="error">Could not reach the prediction API (' + e.message + ').<br>' +
+          'Start it locally with:<br><code>cd server && uvicorn app:app --port 8000</code><br>' +
+          'then open <code>http://localhost:8000/predict.html</code> — or set the API URL under &ldquo;API settings&rdquo;.</p>';
+      });
+  }
+
+  function buildForm(schema) {
+    var form = document.getElementById('patient-form');
+    form.innerHTML = '';
+    GROUPS.forEach(function (g) {
+      var fs = el('fieldset');
+      fs.appendChild(el('legend', null, g[0]));
+      var grid = el('div', { 'class': 'grid' });
+      g[1].forEach(function (field) {
+        var wrap = el('div');
+        wrap.appendChild(el('label', { 'for': 'f-' + field }, LABELS[field] || field));
+        var levels = schema.category_levels[field];
+        var def = schema.defaults[field];
+        var input;
+        if (levels) {
+          input = el('select', { id: 'f-' + field, name: field });
+          levels.forEach(function (lv) {
+            var o = el('option', { value: lv }, lv === '?' ? 'Unknown' : lv);
+            if (lv === def) o.selected = true;
+            input.appendChild(o);
+          });
+        } else {
+          input = el('input', { id: 'f-' + field, name: field, type: 'number',
+                                step: 'any', min: '0', value: def });
+        }
+        wrap.appendChild(input);
+        grid.appendChild(wrap);
+      });
+      fs.appendChild(grid);
+      form.appendChild(fs);
+    });
+    var btn = el('button', { 'class': 'predict', type: 'submit' }, 'Predict risk');
+    form.appendChild(btn);
+    form.appendChild(el('p', { 'class': 'hint' },
+      'Fields not shown (e.g., rarely-used drug columns) default to the most common value in the training data. ' +
+      'Model: ' + SCHEMA.model.name + ', validation AUROC ' + SCHEMA.model.val_auroc.toFixed(4) + '.'));
+    form.addEventListener('submit', onSubmit);
+  }
+
+  function onSubmit(ev) {
+    ev.preventDefault();
+    var btn = ev.target.querySelector('button.predict');
+    btn.disabled = true; btn.textContent = 'Predicting…';
+    var payload = {};
+    ev.target.querySelectorAll('input[name], select[name]').forEach(function (i) {
+      payload[i.name] = i.type === 'number' ? Number(i.value) : i.value;
+    });
+    fetch(apiBase() + '/api/predict', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(payload)
+    })
+      .then(function (r) {
+        if (!r.ok) return r.json().then(function (b) { throw new Error(b.detail || ('HTTP ' + r.status)); });
+        return r.json();
+      })
+      .then(renderResult)
+      .catch(function (e) {
+        document.getElementById('result').innerHTML = '<p class="error">Prediction failed: ' + e.message + '</p>';
+      })
+      .finally(function () { btn.disabled = false; btn.textContent = 'Predict risk'; });
+  }
+
+  function renderResult(r) {
+    var out = document.getElementById('result');
+    out.innerHTML = '';
+
+    var banner = el('div', { 'class': 'risk-banner risk-' + r.risk_level },
+      r.risk_level + ' RISK — ' + (r.calibrated_probability * 100).toFixed(1) +
+      '% calibrated probability of 30-day readmission');
+    out.appendChild(banner);
+
+    var gauge = el('div', { 'class': 'gauge' });
+    var fill = el('div');
+    fill.style.width = (r.calibrated_probability * 100).toFixed(1) + '%';
+    gauge.appendChild(fill);
+    out.appendChild(gauge);
+
+    var kv1 = el('div', { 'class': 'kv' });
+    kv1.innerHTML = '<b>Raw model probability:</b> ' + (r.raw_probability * 100).toFixed(1) +
+      '% &nbsp;→&nbsp; <b>after temperature scaling:</b> ' + (r.calibrated_probability * 100).toFixed(1) + '%';
+    out.appendChild(kv1);
+
+    var kv2 = el('div', { 'class': 'kv' });
+    kv2.innerHTML = '<b>Conformal prediction set (90% coverage):</b> {' +
+      r.conformal_prediction_set.join('; ') + '}';
+    out.appendChild(kv2);
+    out.appendChild(el('p', { 'class': 'fine' }, r.conformal_note));
+
+    var h = el('div', { 'class': 'kv', style: 'margin-top:1rem' });
+    h.innerHTML = '<b>Top factors for this prediction (SHAP):</b>';
+    out.appendChild(h);
+    var t = el('table', { 'class': 'factors' });
+    t.innerHTML = '<tr><th>Feature</th><th>SHAP</th><th>Effect</th></tr>';
+    r.top_factors.forEach(function (f) {
+      var tr = el('tr');
+      tr.appendChild(el('td', null, f.feature));
+      tr.appendChild(el('td', null, f.shap.toFixed(3)));
+      tr.appendChild(el('td', { 'class': f.shap > 0 ? 'up' : 'down' }, f.direction));
+      t.appendChild(tr);
+    });
+    out.appendChild(t);
+
+    out.appendChild(el('p', { 'class': 'fine' }, '⚠ ' + r.disclaimer));
+  }
+
+  init();
+})();
+</script>
+</body>
+</html>
