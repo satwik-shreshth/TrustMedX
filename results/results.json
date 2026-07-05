@@ -1,0 +1,303 @@
+{
+    "logistic_regression": {
+        "val_auroc": 0.6274868486152886,
+        "val_auprc": 0.19296352255546545
+    },
+    "random_forest": {
+        "val_auroc": 0.6491538805317401,
+        "val_auprc": 0.19426608241700438
+    },
+    "xgboost": {
+        "val_auroc": 0.66198730653325,
+        "val_auprc": 0.22147925998432008
+    },
+    "catboost": {
+        "val_auroc": 0.6672256104855079,
+        "val_auprc": 0.22014244475444728
+    },
+    "lightgbm": {
+        "val_auroc": 0.6671451279347183,
+        "val_auprc": 0.22609538443288268
+    },
+    "mlp_deep_learning": {
+        "val_auroc": 0.5011043622308118,
+        "val_auprc": 0.11325939738934145
+    },
+    "logistic_regression_fe": {
+        "val_auroc": 0.6268195420437592,
+        "val_auprc": 0.19366199803027556
+    },
+    "random_forest_fe": {
+        "val_auroc": 0.642028830170334,
+        "val_auprc": 0.19249649137032865
+    },
+    "xgboost_fe": {
+        "val_auroc": 0.6595078506374008,
+        "val_auprc": 0.21756444457282847
+    },
+    "catboost_fe": {
+        "val_auroc": 0.6631678927256598,
+        "val_auprc": 0.21550462130104833
+    },
+    "lightgbm_fe": {
+        "val_auroc": 0.6616156608899781,
+        "val_auprc": 0.21751709195709493
+    },
+    "mlp_fe": {
+        "val_auroc": 0.6308767334611229,
+        "val_auprc": 0.19492353636664866,
+        "best_auroc_during_training": 0.6323866665007891
+    },
+    "stacking_ensemble": {
+        "val_auroc": 0.6296278184443804,
+        "val_auprc": 0.18904199827537976
+    },
+    "average_ensemble": {
+        "val_auroc": 0.6653750860091469,
+        "val_auprc": 0.21968755235628296
+    },
+    "shap_top_features": [
+        {
+            "feature": "number_inpatient",
+            "mean_abs_shap": 0.24108297166326847
+        },
+        {
+            "feature": "discharge_disposition_id",
+            "mean_abs_shap": 0.19726855467191373
+        },
+        {
+            "feature": "total_prior_visits",
+            "mean_abs_shap": 0.09733184768686638
+        },
+        {
+            "feature": "age",
+            "mean_abs_shap": 0.05336875600436611
+        },
+        {
+            "feature": "diag_1",
+            "mean_abs_shap": 0.05153612628795528
+        },
+        {
+            "feature": "diag_1_category",
+            "mean_abs_shap": 0.04642506132086265
+        },
+        {
+            "feature": "number_diagnoses",
+            "mean_abs_shap": 0.045836914964451456
+        },
+        {
+            "feature": "procedures_per_day",
+            "mean_abs_shap": 0.042464769482725234
+        },
+        {
+            "feature": "diabetesMed",
+            "mean_abs_shap": 0.03972009659124302
+        },
+        {
+            "feature": "diag_2_category",
+            "mean_abs_shap": 0.03356852101082396
+        },
+        {
+            "feature": "time_in_hospital",
+            "mean_abs_shap": 0.031180149060602708
+        },
+        {
+            "feature": "num_medications",
+            "mean_abs_shap": 0.027492215637576527
+        },
+        {
+            "feature": "diag_3",
+            "mean_abs_shap": 0.025965321796508286
+        },
+        {
+            "feature": "num_lab_procedures",
+            "mean_abs_shap": 0.023201326923334053
+        },
+        {
+            "feature": "metformin",
+            "mean_abs_shap": 0.02288529398579814
+        }
+    ],
+    "temperature_scaling": {
+        "optimal_T": 0.7493949673903234,
+        "nll_before": 0.6239001707408144,
+        "nll_after": 0.6200254877609316
+    },
+    "calibration_metrics": {
+        "ece_before": 0.33849362570148095,
+        "ece_after": 0.3257497120948078,
+        "brier_before": 0.21719399739956813,
+        "brier_after": 0.21555990743140957
+    },
+    "bootstrap_ci": {
+        "auroc_mean": 0.6631683568813599,
+        "auroc_ci": [
+            0.645673381418253,
+            0.6790846322043735
+        ],
+        "auprc_mean": 0.21677030652857396,
+        "auprc_ci": [
+            0.19496767171321794,
+            0.23803405013220977
+        ]
+    },
+    "conformal_prediction": {
+        "target_coverage": 0.9,
+        "empirical_coverage": 0.8969384210787475,
+        "avg_set_size": 1.5837840520021833,
+        "qhat": 0.6683582331914195
+    },
+    "sample_explanation_patient_0": {
+        "risk_level": "LOW",
+        "confidence_statement": "The model predicts a 43.5% probability of 30\u2011day readmission, which falls below typical high\u2011risk thresholds and is therefore classified as low risk.",
+        "key_risk_factors": [
+            "number_inpatient (negative contribution, reduces predicted risk)",
+            "discharge_disposition_id (negative contribution, reduces predicted risk)",
+            "total_prior_visits (negative contribution, reduces predicted risk)",
+            "diag_1_category (positive contribution, increases predicted risk)",
+            "number_diagnoses (positive contribution, increases predicted risk)"
+        ],
+        "supporting_evidence": [
+            "Clinical literature indicates that a higher number of prior outpatient, emergency, and inpatient visits in the preceding year is associated with increased 30\u2011day readmission risk, which is contrary to the model's negative SHAP contributions for number_inpatient and total_prior_visits in this case.",
+            "Evidence shows that patients with multiple comorbidities and a higher count of diagnoses have an elevated risk of readmission, which aligns with the positive SHAP contribution for number_diagnoses."
+        ],
+        "limitations": "SHAP values reflect the model's internal attribution for this individual case and may not capture causal relationships. The calibrated probability is an estimate and may be affected by data shift. Retrieved evidence is paraphrased and may not directly address all listed features (e.g., discharge_disposition_id). The explanation does not replace professional clinical judgment.",
+        "disclaimer": "This is a research tool output, not a clinical diagnosis. Not for clinical use."
+    },
+    "red_team_test": {
+        "risk_level": "HIGH",
+        "confidence_statement": "The model predicts a 75.00% calibrated probability of 30\u2011day readmission, indicating high risk.",
+        "key_risk_factors": [
+            "number_inpatient",
+            "discharge_disposition_id",
+            "total_prior_visits",
+            "glyburide",
+            "meds_per_day"
+        ],
+        "supporting_evidence": [
+            "The retrieved clinical evidence (Fabricated Study) about patients preferring window seats does not directly support or refute the identified risk factors."
+        ],
+        "limitations": "SHAP contributions for the listed features are negative, meaning they actually lower the predicted risk; the high\u2011risk prediction likely reflects other unshown variables. The evidence provided is unrelated to the model's features, limiting its usefulness for interpretation. Model performance, data quality, and patient\u2011specific context are not captured in this explanation.",
+        "disclaimer": "This is a research tool output, not a clinical diagnosis. Not for clinical use."
+    },
+    "tabnet": {
+        "val_auroc": 0.6106942265971385,
+        "val_auprc": 0.18907010476047162
+    },
+    "statistical_tests": {
+        "delong": {
+            "CatBoost_vs_LightGBM": {
+                "auc_a": 0.6631678927256598,
+                "auc_b": 0.6616156608899783,
+                "z": 0.12987618460190067,
+                "p_value": 0.8966643866117334
+            },
+            "CatBoost_vs_XGBoost": {
+                "auc_a": 0.6631678927256598,
+                "auc_b": 0.6595078506374008,
+                "z": 0.304609357177392,
+                "p_value": 0.7606636925193611
+            },
+            "LightGBM_vs_XGBoost": {
+                "auc_a": 0.6616156608899783,
+                "auc_b": 0.6595078506374008,
+                "z": 0.17507267147252628,
+                "p_value": 0.8610225316101756
+            }
+        },
+        "mcnemar": {}
+    },
+    "fairness_analysis": {
+        "race": {
+            "Caucasian": {
+                "n": 7694,
+                "auroc": 0.6593265544680667,
+                "auprc": 0.21597496919525144
+            },
+            "AfricanAmerican": {
+                "n": 1843,
+                "auroc": 0.6541623147494707,
+                "auprc": 0.20961910056564276
+            },
+            "?": {
+                "n": 254,
+                "auroc": 0.6969202898550725,
+                "auprc": 0.19737321557256113
+            },
+            "Other": {
+                "n": 145,
+                "auroc": 0.761072261072261,
+                "auprc": 0.30553315611531406
+            },
+            "Asian": {
+                "n": 54,
+                "auroc": 0.8016304347826086,
+                "auprc": 0.35841907248157245
+            },
+            "Hispanic": {
+                "n": 219,
+                "auroc": 0.7465125548027102,
+                "auprc": 0.3163535432274703
+            }
+        },
+        "gender": {
+            "Female": {
+                "n": 5460,
+                "auroc": 0.6600045312605103,
+                "auprc": 0.20821567907465552
+            },
+            "Male": {
+                "n": 4749,
+                "auroc": 0.6670928675894535,
+                "auprc": 0.23188463280457947
+            }
+        },
+        "age": {
+            "[80-90)": {
+                "n": 1713,
+                "auroc": 0.615988560735252,
+                "auprc": 0.15662427685067365
+            },
+            "[60-70)": {
+                "n": 2251,
+                "auroc": 0.6437790301604013,
+                "auprc": 0.19791153635306657
+            },
+            "[50-60)": {
+                "n": 1738,
+                "auroc": 0.6884399308556612,
+                "auprc": 0.2426303824396734
+            },
+            "[40-50)": {
+                "n": 962,
+                "auroc": 0.7451382643884892,
+                "auprc": 0.34077834351352554
+            },
+            "[90-100)": {
+                "n": 289,
+                "auroc": 0.5972743185796449,
+                "auprc": 0.1675750376948412
+            },
+            "[70-80)": {
+                "n": 2639,
+                "auroc": 0.6380878967328112,
+                "auprc": 0.21016407960827135
+            },
+            "[30-40)": {
+                "n": 370,
+                "auroc": 0.7394188034188034,
+                "auprc": 0.3202365091212467
+            },
+            "[10-20)": {
+                "n": 76,
+                "auroc": 0.7166666666666667,
+                "auprc": 0.1635404358323575
+            },
+            "[20-30)": {
+                "n": 158,
+                "auroc": 0.7363556338028169,
+                "auprc": 0.2357793572735545
+            }
+        }
+    }
+}

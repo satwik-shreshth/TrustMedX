@@ -1,0 +1,383 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>TrustMedX — Trustworthy Clinical Decision Support</title>
+<meta name="description" content="TrustMedX: a research framework for trustworthy 30-day diabetes readmission prediction — ML, explainability, uncertainty quantification, and retrieval-augmented explanation.">
+<style>
+  :root {
+    --ink: #1a2332;
+    --ink-soft: #4a5568;
+    --accent: #0b4f8a;
+    --accent-soft: #e8f0f8;
+    --warn-bg: #fff8e6;
+    --warn-border: #e6b800;
+    --card-border: #dde3ea;
+    --bg: #fafbfc;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: Georgia, 'Times New Roman', serif;
+    color: var(--ink);
+    background: var(--bg);
+    line-height: 1.65;
+  }
+  header.site {
+    background: var(--accent);
+    color: #fff;
+    padding: 3rem 1.5rem 2.5rem;
+    text-align: center;
+  }
+  header.site h1 { font-size: 2.1rem; font-weight: normal; letter-spacing: 0.5px; }
+  header.site p.sub { margin-top: 0.6rem; font-size: 1.05rem; opacity: 0.92; max-width: 46rem; margin-left: auto; margin-right: auto; }
+  header.site p.author { margin-top: 1rem; font-size: 0.95rem; opacity: 0.85; }
+  nav.toc {
+    background: #fff;
+    border-bottom: 1px solid var(--card-border);
+    position: sticky; top: 0; z-index: 10;
+    text-align: center;
+    padding: 0.55rem 0.5rem;
+    font-family: 'Segoe UI', Arial, sans-serif;
+    font-size: 0.88rem;
+  }
+  nav.toc a { color: var(--accent); text-decoration: none; margin: 0 0.7rem; white-space: nowrap; }
+  nav.toc a:hover { text-decoration: underline; }
+  .disclaimer {
+    background: var(--warn-bg);
+    border: 1px solid var(--warn-border);
+    border-left: 5px solid var(--warn-border);
+    max-width: 62rem;
+    margin: 1.4rem auto;
+    padding: 0.9rem 1.2rem;
+    font-family: 'Segoe UI', Arial, sans-serif;
+    font-size: 0.88rem;
+    color: #5c4a00;
+    border-radius: 4px;
+  }
+  main { max-width: 62rem; margin: 0 auto; padding: 0 1.5rem 4rem; }
+  section { margin-top: 3rem; }
+  section > h2 {
+    font-size: 1.5rem; font-weight: normal;
+    color: var(--accent);
+    border-bottom: 2px solid var(--accent-soft);
+    padding-bottom: 0.4rem; margin-bottom: 1rem;
+  }
+  section p { margin-bottom: 0.9rem; }
+  .figure {
+    background: #fff; border: 1px solid var(--card-border); border-radius: 6px;
+    padding: 1rem; margin: 1.3rem 0; text-align: center;
+  }
+  .figure img { max-width: 100%; height: auto; }
+  .figure figcaption {
+    font-family: 'Segoe UI', Arial, sans-serif;
+    font-size: 0.85rem; color: var(--ink-soft); margin-top: 0.6rem;
+  }
+  .fig-row { display: grid; grid-template-columns: 1fr 1fr; gap: 1.3rem; }
+  @media (max-width: 760px) { .fig-row { grid-template-columns: 1fr; } }
+  table.data {
+    width: 100%; border-collapse: collapse; margin: 1.2rem 0;
+    font-family: 'Segoe UI', Arial, sans-serif; font-size: 0.9rem;
+    background: #fff; border: 1px solid var(--card-border);
+  }
+  table.data th {
+    background: var(--accent); color: #fff; text-align: left;
+    padding: 0.55rem 0.8rem; font-weight: 600;
+  }
+  table.data td { padding: 0.5rem 0.8rem; border-top: 1px solid var(--card-border); }
+  table.data tr:nth-child(even) td { background: #f4f7fa; }
+  table.data td.num { text-align: right; font-variant-numeric: tabular-nums; }
+  table.data tr.best td { background: var(--accent-soft); font-weight: 600; }
+  .stat-row { display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 1rem; margin: 1.2rem 0; }
+  .stat {
+    background: #fff; border: 1px solid var(--card-border); border-radius: 6px;
+    padding: 1rem; text-align: center; font-family: 'Segoe UI', Arial, sans-serif;
+  }
+  .stat .val { font-size: 1.6rem; color: var(--accent); font-weight: 600; }
+  .stat .lbl { font-size: 0.8rem; color: var(--ink-soft); margin-top: 0.3rem; }
+  .card {
+    background: #fff; border: 1px solid var(--card-border); border-radius: 6px;
+    padding: 1.4rem 1.6rem; margin: 1.3rem 0;
+    font-family: 'Segoe UI', Arial, sans-serif; font-size: 0.92rem;
+  }
+  .card h3 { font-size: 1rem; color: var(--accent); margin-bottom: 0.7rem; }
+  .card .risk-badge {
+    display: inline-block; padding: 0.15rem 0.7rem; border-radius: 999px;
+    font-weight: 700; font-size: 0.85rem;
+    background: #e6f4ea; color: #1e7d3c; margin-left: 0.5rem;
+  }
+  .card ul { margin: 0.4rem 0 0.9rem 1.3rem; }
+  .card li { margin-bottom: 0.3rem; }
+  .card .field-label { font-weight: 600; color: var(--ink); margin-top: 0.8rem; }
+  .card .fine { font-size: 0.82rem; color: var(--ink-soft); }
+  .note { font-family: 'Segoe UI', Arial, sans-serif; font-size: 0.85rem; color: var(--ink-soft); font-style: italic; }
+  footer {
+    border-top: 1px solid var(--card-border);
+    padding: 1.6rem 1.5rem 2.2rem; text-align: center;
+    font-family: 'Segoe UI', Arial, sans-serif; font-size: 0.85rem; color: var(--ink-soft);
+  }
+  footer a { color: var(--accent); }
+  .load-error { color: #a33; font-family: 'Segoe UI', Arial, sans-serif; font-size: 0.9rem; }
+</style>
+</head>
+<body>
+
+<header class="site">
+  <h1>TrustMedX</h1>
+  <p class="sub">A Trustworthy Clinical Decision Support Framework for 30-Day Diabetes Readmission Prediction —
+  combining machine learning, explainability, uncertainty quantification, and retrieval-augmented explanation.</p>
+  <p class="author">Satwik Shreshth · satwikshreshth2002@gmail.com · <a href="trustmedx_paper.pdf" style="color:#cfe3f5">Read the paper (PDF)</a></p>
+</header>
+
+<nav class="toc">
+  <a href="#overview">Overview</a>
+  <a href="#performance">Model Performance</a>
+  <a href="#explainability">Explainability</a>
+  <a href="#uncertainty">Uncertainty &amp; Calibration</a>
+  <a href="#fairness">Fairness</a>
+  <a href="#engine">Explanation Engine</a>
+</nav>
+
+<div class="disclaimer">
+  <strong>Research prototype only.</strong> TrustMedX is <em>not</em> a medical device, has <em>not</em> been reviewed or
+  approved by any regulatory body (e.g., FDA), and must <em>not</em> be used to make real clinical decisions about real
+  patients. All predictions, explanations, and confidence scores demonstrate a research methodology. Any real clinical
+  decision must be made by a licensed healthcare professional using validated, approved clinical tools and their own
+  clinical judgment.
+</div>
+
+<main>
+
+<section id="overview">
+  <h2>Overview</h2>
+  <p>Most machine learning research in clinical decision support reports predictive accuracy in isolation, without
+  addressing whether clinicians can trust or act on a given prediction. Two gaps limit real-world adoption:
+  (1)&nbsp;predictions lack calibrated confidence, so a 51%-confident and a 99%-confident &ldquo;high risk&rdquo; flag are
+  indistinguishable; and (2)&nbsp;explanations such as SHAP or LIME show which features mattered but are not grounded in
+  verifiable clinical evidence.</p>
+  <p>TrustMedX addresses both gaps in a single, measurable, reproducible system. Fourteen models were evaluated on the
+  Diabetes 130-US Hospitals dataset (101,766 encounters, 1999&ndash;2008; 11.2% readmitted within 30 days), with
+  patient-level grouped splitting to prevent leakage. Calibration, conformal prediction, SHAP-based explainability, and
+  retrieval-augmented LLM synthesis together produce a system that expresses genuine uncertainty and refuses to fabricate
+  unsupported claims &mdash; validated via a red-team hallucination test.</p>
+  <div class="stat-row" id="overview-stats"></div>
+</section>
+
+<section id="performance">
+  <h2>Model Performance</h2>
+  <p>Gradient-boosted tree models achieve the best discriminative performance, consistent with published benchmarks on
+  this dataset. DeLong's test found no statistically significant AUROC difference among CatBoost, LightGBM, and XGBoost
+  (all p&nbsp;&gt;&nbsp;0.05) &mdash; yet McNemar's test shows they disagree significantly (p&nbsp;&lt;&nbsp;0.001) on
+  <em>which</em> patients are flagged at a fixed threshold, so threshold selection deserves as much attention as headline
+  AUROC.</p>
+  <div id="model-table-container"><p class="note">Loading model results&hellip;</p></div>
+  <div class="figure">
+    <img src="plots/roc_curves_val.png" alt="Validation ROC curves" loading="lazy">
+    <figcaption>Validation ROC curves for the evaluated models.</figcaption>
+  </div>
+</section>
+
+<section id="explainability">
+  <h2>Explainability</h2>
+  <p>SHAP TreeExplainer computes global feature importance and per-patient local explanations for the best model.
+  The dominant predictors &mdash; prior inpatient admissions, discharge disposition, and total prior visits &mdash; align
+  with established clinical literature on healthcare utilization and discharge planning.</p>
+  <div id="shap-list"></div>
+  <div class="fig-row">
+    <div class="figure">
+      <img src="plots/shap_summary_plot.png" alt="SHAP summary plot" loading="lazy">
+      <figcaption>Global SHAP feature importance (mean |SHAP| value).</figcaption>
+    </div>
+    <div class="figure">
+      <img src="plots/shap_waterfall_patient0.png" alt="SHAP waterfall for patient 0" loading="lazy">
+      <figcaption>Per-patient local explanation (SHAP waterfall, patient 0).</figcaption>
+    </div>
+  </div>
+</section>
+
+<section id="uncertainty">
+  <h2>Uncertainty &amp; Calibration</h2>
+  <p>Temperature scaling improves probability calibration, and split conformal prediction supplies distribution-free
+  coverage guarantees. Bootstrap resampling (n&nbsp;=&nbsp;1000) quantifies confidence intervals on the headline metrics.</p>
+  <div class="stat-row" id="uq-stats"></div>
+  <div class="figure">
+    <img src="plots/reliability_diagram.png" alt="Reliability diagram" loading="lazy">
+    <figcaption>Reliability diagram before and after temperature scaling.</figcaption>
+  </div>
+</section>
+
+<section id="fairness">
+  <h2>Fairness &amp; Subgroup Analysis</h2>
+  <p>Performance is comparable across the two largest race groups and across gender. Age shows a clinically meaningful
+  pattern: discrimination is notably weaker for the oldest patients (80&ndash;90: AUROC 0.616; 90&ndash;100: 0.597) than
+  for middle-aged patients (40&ndash;50: 0.745) &mdash; a significant limitation, since elderly patients are both the
+  largest and highest-risk subgroup.</p>
+  <p class="note">Honest caveat: apparent differences in small race subgroups (e.g., Asian n=54, Other n=145) are likely
+  small-sample artifacts and should not be over-interpreted.</p>
+  <div id="fairness-table-container"></div>
+  <div class="figure">
+    <img src="plots/fairness_subgroup_auroc.png" alt="Subgroup AUROC" loading="lazy">
+    <figcaption>Validation AUROC across race, gender, and age subgroups.</figcaption>
+  </div>
+</section>
+
+<section id="engine">
+  <h2>Explanation Engine — Sample Output</h2>
+  <p>Retrieved clinical evidence, SHAP attributions, and the calibrated probability are synthesized by an LLM into a
+  structured, cited explanation, under an explicit constraint against fabricating unsupported claims. Below is the actual
+  engine output for a real validation patient.</p>
+  <div class="card" id="explanation-card"><p class="note">Loading sample explanation&hellip;</p></div>
+</section>
+
+</main>
+
+<footer>
+  <div class="disclaimer" style="margin-bottom:1.2rem">
+    <strong>Reminder:</strong> This is a research tool output, not a clinical diagnosis. Not for clinical use.
+  </div>
+  TrustMedX Research Project · Satwik Shreshth ·
+  <a href="https://github.com/satwik-shreshth/TrustMedX">github.com/satwik-shreshth/TrustMedX</a> ·
+  <a href="trustmedx_paper.pdf">Paper (PDF)</a>
+</footer>
+
+<script>
+(function () {
+  'use strict';
+
+  var fmt = function (x, d) { return Number(x).toFixed(d === undefined ? 4 : d); };
+
+  function el(tag, cls, text) {
+    var e = document.createElement(tag);
+    if (cls) e.className = cls;
+    if (text !== undefined) e.textContent = text;
+    return e;
+  }
+
+  function stat(container, value, label) {
+    var s = el('div', 'stat');
+    s.appendChild(el('div', 'val', value));
+    s.appendChild(el('div', 'lbl', label));
+    container.appendChild(s);
+  }
+
+  fetch('results/results.json')
+    .then(function (r) { if (!r.ok) throw new Error(r.status); return r.json(); })
+    .then(render)
+    .catch(function (e) {
+      document.getElementById('model-table-container').innerHTML =
+        '<p class="load-error">Could not load results/results.json (' + e.message + '). ' +
+        'If viewing locally, serve the folder with a web server (e.g., <code>python -m http.server</code>) ' +
+        'rather than opening the file directly.</p>';
+    });
+
+  function render(R) {
+    // ---- Overview stats ----
+    var ov = document.getElementById('overview-stats');
+    stat(ov, '101,766', 'Hospital encounters');
+    stat(ov, '14', 'Models evaluated');
+    stat(ov, fmt(R.catboost.val_auroc), 'Best AUROC (CatBoost)');
+    stat(ov, fmt(R.catboost.val_auprc), 'AUPRC (CatBoost)');
+
+    // ---- Model comparison table ----
+    var MODELS = [
+      ['catboost', 'CatBoost'], ['lightgbm', 'LightGBM'], ['average_ensemble', 'Averaging ensemble'],
+      ['catboost_fe', 'CatBoost (FE)'], ['xgboost', 'XGBoost'], ['lightgbm_fe', 'LightGBM (FE)'],
+      ['xgboost_fe', 'XGBoost (FE)'], ['random_forest', 'Random forest'], ['random_forest_fe', 'Random forest (FE)'],
+      ['mlp_fe', 'MLP (FE)'], ['stacking_ensemble', 'Stacking ensemble'], ['logistic_regression', 'Logistic regression'],
+      ['logistic_regression_fe', 'Logistic regression (FE)'], ['tabnet', 'TabNet'], ['mlp_deep_learning', 'MLP (deep learning)']
+    ];
+    var tbl = el('table', 'data');
+    tbl.innerHTML = '<thead><tr><th>Model</th><th style="text-align:right">Val AUROC</th><th style="text-align:right">Val AUPRC</th></tr></thead>';
+    var tbody = el('tbody');
+    MODELS.forEach(function (m, i) {
+      var d = R[m[0]];
+      if (!d) return;
+      var tr = el('tr', i === 0 ? 'best' : null);
+      tr.appendChild(el('td', null, m[1]));
+      var t1 = el('td', 'num', fmt(d.val_auroc)); tr.appendChild(t1);
+      var t2 = el('td', 'num', fmt(d.val_auprc)); tr.appendChild(t2);
+      tbody.appendChild(tr);
+    });
+    tbl.appendChild(tbody);
+    var mc = document.getElementById('model-table-container');
+    mc.innerHTML = '';
+    mc.appendChild(tbl);
+    mc.appendChild(el('p', 'note', 'FE = feature-engineered input set. Highlighted row: best validation AUROC. ' +
+      '95% bootstrap CI for final model AUROC: [' + fmt(R.bootstrap_ci.auroc_ci[0]) + ', ' + fmt(R.bootstrap_ci.auroc_ci[1]) + '].'));
+
+    // ---- SHAP top features ----
+    var shapDiv = document.getElementById('shap-list');
+    var top = R.shap_top_features.slice(0, 5);
+    var st = el('table', 'data');
+    st.innerHTML = '<thead><tr><th>Rank</th><th>Feature</th><th style="text-align:right">Mean |SHAP|</th></tr></thead>';
+    var sb = el('tbody');
+    top.forEach(function (f, i) {
+      var tr = el('tr');
+      tr.appendChild(el('td', null, String(i + 1)));
+      tr.appendChild(el('td', null, f.feature));
+      tr.appendChild(el('td', 'num', fmt(f.mean_abs_shap)));
+      sb.appendChild(tr);
+    });
+    st.appendChild(sb);
+    shapDiv.appendChild(st);
+
+    // ---- Uncertainty stats ----
+    var uq = document.getElementById('uq-stats');
+    stat(uq, fmt(R.calibration_metrics.ece_before) + ' → ' + fmt(R.calibration_metrics.ece_after), 'ECE (before → after scaling)');
+    stat(uq, fmt(R.calibration_metrics.brier_before) + ' → ' + fmt(R.calibration_metrics.brier_after), 'Brier score (before → after)');
+    stat(uq, fmt(R.temperature_scaling.optimal_T), 'Optimal temperature T');
+    stat(uq, fmt(R.conformal_prediction.empirical_coverage), 'Conformal coverage (target 0.90)');
+    stat(uq, fmt(R.conformal_prediction.avg_set_size), 'Avg. prediction set size');
+    stat(uq, '[' + fmt(R.bootstrap_ci.auroc_ci[0], 3) + ', ' + fmt(R.bootstrap_ci.auroc_ci[1], 3) + ']', '95% bootstrap CI, AUROC');
+
+    // ---- Fairness table ----
+    var fc = document.getElementById('fairness-table-container');
+    var ft = el('table', 'data');
+    ft.innerHTML = '<thead><tr><th>Subgroup</th><th style="text-align:right">n</th><th style="text-align:right">AUROC</th><th style="text-align:right">AUPRC</th></tr></thead>';
+    var fb = el('tbody');
+    function fairRows(groupName, obj, order) {
+      var hdr = el('tr');
+      var td = el('td', null, groupName);
+      td.colSpan = 4; td.style.fontWeight = '700'; td.style.background = '#eef3f8';
+      hdr.appendChild(td); fb.appendChild(hdr);
+      (order || Object.keys(obj)).forEach(function (k) {
+        if (!obj[k]) return;
+        var tr = el('tr');
+        tr.appendChild(el('td', null, k === '?' ? 'Unknown' : k));
+        tr.appendChild(el('td', 'num', obj[k].n.toLocaleString()));
+        tr.appendChild(el('td', 'num', fmt(obj[k].auroc, 3)));
+        tr.appendChild(el('td', 'num', fmt(obj[k].auprc, 3)));
+        fb.appendChild(tr);
+      });
+    }
+    fairRows('Race', R.fairness_analysis.race, ['Caucasian', 'AfricanAmerican', '?', 'Hispanic', 'Other', 'Asian']);
+    fairRows('Gender', R.fairness_analysis.gender, ['Female', 'Male']);
+    fairRows('Age group', R.fairness_analysis.age,
+      ['[10-20)', '[20-30)', '[30-40)', '[40-50)', '[50-60)', '[60-70)', '[70-80)', '[80-90)', '[90-100)']);
+    ft.appendChild(fb);
+    fc.appendChild(ft);
+
+    // ---- Explanation engine card ----
+    var ex = R.sample_explanation_patient_0;
+    var card = document.getElementById('explanation-card');
+    card.innerHTML = '';
+    var h = el('h3', null, 'Patient 0 — Risk level:');
+    h.appendChild(el('span', 'risk-badge', ex.risk_level));
+    card.appendChild(h);
+    card.appendChild(el('p', null, ex.confidence_statement));
+    card.appendChild(el('div', 'field-label', 'Key risk factors'));
+    var ul1 = el('ul');
+    ex.key_risk_factors.forEach(function (k) { ul1.appendChild(el('li', null, k)); });
+    card.appendChild(ul1);
+    card.appendChild(el('div', 'field-label', 'Supporting evidence (retrieved)'));
+    var ul2 = el('ul');
+    ex.supporting_evidence.forEach(function (k) { ul2.appendChild(el('li', null, k)); });
+    card.appendChild(ul2);
+    card.appendChild(el('div', 'field-label', 'Limitations'));
+    card.appendChild(el('p', 'fine', ex.limitations));
+    card.appendChild(el('p', 'fine', '⚠ ' + ex.disclaimer));
+  }
+})();
+</script>
+</body>
+</html>

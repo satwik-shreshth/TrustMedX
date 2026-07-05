@@ -1,0 +1,37 @@
+I'm working on TrustMedX, a research project on trustworthy clinical decision support for diabetes 30-day hospital readmission prediction. All my data, results, and notebook outputs are in this folder: C:\Users\satwi\OneDrive\Desktop\TrustMedX\TrustMedX_deliverables
+
+Author: Satwik Shreshth
+Email: satwikshreshth2002@gmail.com
+
+The folder contains:
+- results/ (results.json, model_comparison.csv, shap_feature_importance.csv, final_model_comparison.csv, uq_summary.json)
+- plots/ (SHAP summary/waterfall plots, ROC curves, calibration/reliability diagrams, fairness subgroup charts, model comparison bar charts)
+- governance/ (DATA_CARD.md, MODEL_CARD.md, DISCLAIMER.md)
+- manuscript/ (main.md - draft manuscript with Abstract through Conclusion)
+
+Please do two things:
+
+## 1. Build a frontend dashboard
+Create a clean, professional React (or plain HTML/CSS/JS if simpler) dashboard that presents this project as a research artifact. It should include:
+- A landing/overview page explaining TrustMedX (pull from manuscript's Abstract/Introduction), with author credit (Satwik Shreshth)
+- A "Model Performance" section showing the model comparison table and ROC/comparison plots
+- An "Explainability" section showing SHAP summary and waterfall plots with brief explanations
+- An "Uncertainty & Calibration" section showing reliability diagrams, ECE/Brier scores, and conformal prediction coverage
+- A "Fairness" section showing the subgroup AUROC charts (race/gender/age) with the honest caveat about small-sample-size subgroups
+- A sample "Explanation Engine" output card (pull from results.json's sample_explanation_patient_0) showing what a real prediction + explanation looks like
+- Clear disclaimers (from governance/DISCLAIMER.md) visible on every page — this is a research prototype, not for clinical use
+- Read all actual numbers from results/results.json and the CSVs — don't hardcode fabricated numbers
+- Use the actual PNG plots from plots/ folder as images
+
+Read all files in the deliverables folder first to understand what's available before designing anything.
+
+## 2. Convert the manuscript to a proper IEEE-format LaTeX paper
+- Read manuscript/main.md as the content source
+- Use the standard IEEEtran LaTeX document class
+- Title, Author (Satwik Shreshth, satwikshreshth2002@gmail.com), Abstract, Keywords, then Introduction, Related Work, Methods, Experiments & Results (with tables/figures pulled from results/ and plots/), Discussion, Limitations, Ethics Statement, Conclusion, References
+- Insert the actual figures from plots/ folder as \includegraphics with proper IEEE-style captions
+- Convert the model comparison table into a proper LaTeX table (booktabs style)
+- Add a References section with placeholder BibTeX entries for: Strack et al. 2014 (dataset), Lundberg & Lee 2017 (SHAP), Guo et al. 2017 (temperature scaling), Vovk et al. (conformal prediction), Lewis et al. 2020 (RAG) — flag clearly that I need to verify/complete these citations myself
+- Output as a .tex file plus a Makefile or build script to compile to PDF if pdflatex is available
+
+Ask me before making assumptions about anything not covered in the deliverables (e.g., institution/affiliation, target venue).

@@ -1,0 +1,31 @@
+{
+    "Temperature Scaling": {
+        "optimal_T": 0.7493949673903234,
+        "nll_before": 0.6239001707408144,
+        "nll_after": 0.6200254877609316
+    },
+    "Calibration Metrics": {
+        "ece_before": 0.33849362570148095,
+        "ece_after": 0.3257497120948078,
+        "brier_before": 0.21719399739956813,
+        "brier_after": 0.21555990743140957
+    },
+    "Bootstrap CI": {
+        "auroc_mean": 0.6631683568813599,
+        "auroc_ci": [
+            0.645673381418253,
+            0.6790846322043735
+        ],
+        "auprc_mean": 0.21677030652857396,
+        "auprc_ci": [
+            0.19496767171321794,
+            0.23803405013220977
+        ]
+    },
+    "Conformal Prediction": {
+        "target_coverage": 0.9,
+        "empirical_coverage": 0.8969384210787475,
+        "avg_set_size": 1.5837840520021833,
+        "qhat": 0.6683582331914195
+    }
+}
